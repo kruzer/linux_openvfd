@@ -181,6 +181,7 @@ void led_test_codes()
 	unsigned int i = 0;
 
 	// Test chart, sequence of numbers.
+	printf(" Test chart, seq of nr from:0 to %d\n",LEDCODES_LEN);
 	for(i = 0; i < LEDCODES_LEN; i++) {
 		val = ~val;
 		write_buffer[1] = char_to_mask(ledCodes[i].character);
@@ -190,10 +191,11 @@ void led_test_codes()
 		write_buffer[0] = val;
 
 		write(openvfd_fd,write_buffer,sizeof(write_buffer[0])*5);
-		mdelay(500);
+		mdelay(50);
 	}
 
 	// Test bit sequence.
+	printf(" Bit sequence\n");
 	for(i = 0; i < 10; i++) {
 		val = ~val;
 		write_buffer[1] = char_to_mask(1);
@@ -207,6 +209,7 @@ void led_test_codes()
 	}
 
 	// Test sequence 2
+	printf(" Bit sequence 2\n");
 	write_buffer[0] = 0;
 	for(i = 0; i < LED_DOT_MAX; i++){
 		val = ~val;
@@ -221,6 +224,7 @@ void led_test_codes()
 	}
 
 	// Test sequence 3
+	printf(" Bit sequence 3\n");
 	write_buffer[0] = 0;
 	for(i = 0; i < LED_DOT_MAX; i++){
 		val = ~val;
@@ -262,22 +266,27 @@ void led_test_loop(bool cycle_display_types)
 
 		// Light up all sections and cycle
 		// through display brightness levels.
+		printf("Brightness loop from %d to %d\n",FD628_Brightness_1, FD628_Brightness_8);
 		memset(wb, 0xFF, sz);
 		write(openvfd_fd,wb,sz);
 		for (i = FD628_Brightness_1; i <= FD628_Brightness_8; i++) {
 			ioctl(openvfd_fd, VFD_IOC_SBRIGHT, &i);
-			mdelay(1000);
+			mdelay(100);
 		}
 
 		// Clear display for a second.
+		printf("Clear display\n");
 		memset(wb, 0x00, sz);
 		write(openvfd_fd,wb,sz);
-		mdelay(1000);
+		mdelay(500);
 
 		// Run original test codes.
+		printf("Original test codes:\n");
 		led_test_codes();
+		printf("Back from Original test codes\n");
 
 		// Cycle through fully lit characters.
+		printf("cycle characters\n");
 		for (i = 0; i < len; i++) {
 			memset(wb, 0x00, sz);
 			wb[i] = 0xFF;
@@ -285,6 +294,7 @@ void led_test_loop(bool cycle_display_types)
 			mdelay(1000);
 		}
 
+		printf("cycle bits\n");
 		// Cycle through bits in each character.
 		for (i = 0; i < len; i++) {
 			memset(wb, (1 << i), sz);
